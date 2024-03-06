@@ -5,12 +5,6 @@ import { RouterModule } from '@angular/router';
   standalone: true,
   imports: [RouterModule],
   selector: 'dapp-root',
-  template: `
-    <div>
-      <router-outlet></router-outlet>
-    </div>
-  `,
+  template: ` <router-outlet></router-outlet> `,
 })
-export class AppComponent {
-  title = 'demo';
-}
+export class AppComponent {}
