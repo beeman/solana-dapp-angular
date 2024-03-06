@@ -95,3 +95,47 @@ export class AppHeroComponent {
   @Input() title?: string;
   @Input() subtitle?: string;
 }
+
+@Component({
+  selector: 'dapp-app-table',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="overflow-x-auto">
+      <table class="table border-4 border-separate border-base-300">
+        <thead>
+          <tr>
+            <th>Name / Network / Endpoint</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bg-base-200">
+            <td class="space-y-2">
+              <div class="whitespace-nowrap space-x-2">
+                <span class="text-xl">
+                  <button class="link link-secondary">devnet</button>
+                </span>
+              </div>
+              <span class="text-xs">Network: </span>
+              <div class="whitespace-nowrap text-gray-500 text-xs">
+                http://localhost:8899
+              </div>
+            </td>
+            <td class="space-x-2 whitespace-nowrap text-center">
+              <button class="btn btn-xs btn-default btn-outline">
+                <i class="fas fa-trash" size="16"></i>
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  `,
+  styles: `
+`,
+})
+export class AppTableComponent {
+  @Input() name?: string;
+  @Input() endpoint?: string;
+}
