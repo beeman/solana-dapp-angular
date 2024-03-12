@@ -6,8 +6,8 @@ import { Component } from '@angular/core';
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div>
-      <p>account-list-feature works!</p>
+    <div class=" py-64">
+      <div class="text-center">Wallet</div>
     </div>
   `,
 })
