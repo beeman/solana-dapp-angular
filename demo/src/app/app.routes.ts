@@ -9,17 +9,17 @@ const links: { label: string; path: string }[] = [
 
 const routes: Route[] = [
   {
-    path: 'account',
-    loadComponent: () =>
-      import('./account/account-list-feature.component').then(
-        (m) => m.AccountListFeatureComponent
-      ),
-  },
-  {
     path: 'account/:address',
     loadComponent: () =>
       import('./account/account-detail-feature.component').then(
         (m) => m.AccountDetailFeatureComponent
+      ),
+  },
+  {
+    path: 'account',
+    loadComponent: () =>
+      import('./account/account-list-feature.component').then(
+        (m) => m.AccountListFeatureComponent
       ),
   },
   {
