@@ -5,8 +5,14 @@ import { RouterLink } from '@angular/router';
 import {
   AccountButtonsComponent,
   AccountTokensComponent,
+  AccountTransactionsComponent,
 } from './account-ui.component';
-import { Account, defaultAccounts } from './account-data-access.component';
+import {
+  Account,
+  Transaction,
+  defaultAccounts,
+  defaultTransactions,
+} from './account-data-access.component';
 
 @Component({
   selector: 'dapp-account-detail-feature',
@@ -17,6 +23,7 @@ import { Account, defaultAccounts } from './account-data-access.component';
     RouterLink,
     AccountButtonsComponent,
     AccountTokensComponent,
+    AccountTransactionsComponent,
   ],
   template: `
     <div>
@@ -32,10 +39,12 @@ import { Account, defaultAccounts } from './account-data-access.component';
       </dapp-app-hero>
       <div class="space-y-8">
         <dapp-account-tokens [accounts]="defaultAccounts" />
+        <dapp-account-transactions [transactions]="defaultTransactions" />
       </div>
     </div>
   `,
 })
 export class AccountDetailFeatureComponent {
   defaultAccounts: Account[] = defaultAccounts;
+  defaultTransactions: Transaction[] = defaultTransactions;
 }
