@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, Inject, Input } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { DIALOG_DATA } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'dapp-ui-layout',
@@ -69,6 +70,40 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 })
 export class UiLayoutComponent {
   @Input() links!: { label: string; path: string }[];
+}
+
+@Component({
+  selector: 'dapp-app-modal',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <dialog class="modal" open>
+      <div class="modal-box space-y-5">
+        <h3 class="font-bold text-lg">Airdrop</h3>
+
+        <input
+          type="number"
+          step="any"
+          min="1"
+          placeholder="Amount"
+          class="input input-bordered w-full"
+        />
+
+        <div class="modal-action">
+          <div class="join space-x-2">
+            <button class="btn btn-xs lg:btn-md btn-primary">
+              {{ data.button }}
+            </button>
+            <button class="btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  `,
+  styles: ``,
+})
+export class AppModalComponent {
+  constructor(@Inject(DIALOG_DATA) public data: { button: string }) {}
 }
 
 @Component({
