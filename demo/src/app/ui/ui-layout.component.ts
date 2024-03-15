@@ -37,17 +37,9 @@ import { DIALOG_DATA } from '@angular/cdk/dialog';
       <!--        <AccountChecker />-->
       <!--      </ClusterChecker>-->
 
-      <main>
+      <main class="flex-grow mx-4 lg:mx-auto">
         <router-outlet />
       </main>
-
-      <div class="flex-grow mx-4 lg:mx-auto">
-        <div class="text-center my-32">
-          <!--              <span className="loading loading-spinner loading-lg"></span>-->
-        </div>
-
-        <!--        <Toaster position="bottom-right" />-->
-      </div>
 
       <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
