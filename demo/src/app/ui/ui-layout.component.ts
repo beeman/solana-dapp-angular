@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'dapp-ui-layout',
@@ -81,7 +82,7 @@ export class UiLayoutComponent {
             >
               {{ submitLabel }}
             </button>
-            <button class="btn">Close</button>
+            <button (click)="close()" class="btn">Close</button>
           </div>
         </div>
       </div>
@@ -93,6 +94,11 @@ export class AppModalComponent {
   @Input() submitLabel!: string;
   @Input() submitDisabled?: boolean;
   @Output() doSubmit = new EventEmitter();
+
+  private readonly dialog = inject(Dialog);
+  close() {
+    this.dialog.closeAll();
+  }
 }
 
 @Component({
