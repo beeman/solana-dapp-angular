@@ -28,7 +28,7 @@ import {
   template: `
     <div>
       <dapp-app-hero>
-        <div class="my-4">100 SOL</div>
+        <h1 class="text-5xl font-bold cursor-pointer">100 SOL</h1>
         <div class="my-4">
           <a
             routerLink="https://explorer.solana.com/address/CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr?cluster=devnet"

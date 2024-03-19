@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, Input } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { DIALOG_DATA } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'dapp-ui-layout',
@@ -37,17 +36,9 @@ import { DIALOG_DATA } from '@angular/cdk/dialog';
       <!--        <AccountChecker />-->
       <!--      </ClusterChecker>-->
 
-      <main>
+      <main class="flex-grow mx-4 lg:mx-auto">
         <router-outlet />
       </main>
-
-      <div class="flex-grow mx-4 lg:mx-auto">
-        <div class="text-center my-32">
-          <!--              <span className="loading loading-spinner loading-lg"></span>-->
-        </div>
-
-        <!--        <Toaster position="bottom-right" />-->
-      </div>
 
       <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
@@ -79,20 +70,16 @@ export class UiLayoutComponent {
   template: `
     <dialog class="modal" open>
       <div class="modal-box space-y-5">
-        <h3 class="font-bold text-lg">Airdrop</h3>
-
-        <input
-          type="number"
-          step="any"
-          min="1"
-          placeholder="Amount"
-          class="input input-bordered w-full"
-        />
-
+        <h3 class="font-bold text-lg">{{ title }}</h3>
+        <ng-content />
         <div class="modal-action">
           <div class="join space-x-2">
-            <button class="btn btn-xs lg:btn-md btn-primary">
-              {{ data.button }}
+            <button
+              [disabled]="submitDisabled"
+              class="btn btn-xs lg:btn-md btn-primary"
+              (click)="doSubmit.emit()"
+            >
+              {{ submitLabel }}
             </button>
             <button class="btn">Close</button>
           </div>
@@ -100,10 +87,12 @@ export class UiLayoutComponent {
       </div>
     </dialog>
   `,
-  styles: ``,
 })
 export class AppModalComponent {
-  constructor(@Inject(DIALOG_DATA) public data: { button: string }) {}
+  @Input() title!: string;
+  @Input() submitLabel!: string;
+  @Input() submitDisabled?: boolean;
+  @Output() doSubmit = new EventEmitter();
 }
 
 @Component({
