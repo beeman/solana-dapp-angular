@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
+import { Dialog } from '@angular/cdk/dialog';
 
 @Component({
   selector: 'dapp-ui-layout',
@@ -36,17 +37,9 @@ import { RouterLink, RouterOutlet } from '@angular/router';
       <!--        <AccountChecker />-->
       <!--      </ClusterChecker>-->
 
-      <main>
+      <main class="flex-grow mx-4 lg:mx-auto">
         <router-outlet />
       </main>
-
-      <div class="flex-grow mx-4 lg:mx-auto">
-        <div class="text-center my-32">
-          <!--              <span className="loading loading-spinner loading-lg"></span>-->
-        </div>
-
-        <!--        <Toaster position="bottom-right" />-->
-      </div>
 
       <footer class="footer footer-center p-4 bg-base-300 text-base-content">
         <aside>
@@ -69,6 +62,43 @@ import { RouterLink, RouterOutlet } from '@angular/router';
 })
 export class UiLayoutComponent {
   @Input() links!: { label: string; path: string }[];
+}
+
+@Component({
+  selector: 'dapp-app-modal',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <dialog class="modal" open>
+      <div class="modal-box space-y-5">
+        <h3 class="font-bold text-lg">{{ title }}</h3>
+        <ng-content />
+        <div class="modal-action">
+          <div class="join space-x-2">
+            <button
+              [disabled]="submitDisabled"
+              class="btn btn-xs lg:btn-md btn-primary"
+              (click)="doSubmit.emit()"
+            >
+              {{ submitLabel }}
+            </button>
+            <button (click)="close()" class="btn">Close</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+  `,
+})
+export class AppModalComponent {
+  @Input() title!: string;
+  @Input() submitLabel!: string;
+  @Input() submitDisabled?: boolean;
+  @Output() doSubmit = new EventEmitter();
+
+  private readonly dialog = inject(Dialog);
+  close() {
+    this.dialog.closeAll();
+  }
 }
 
 @Component({

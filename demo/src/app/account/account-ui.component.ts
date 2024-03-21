@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, inject, Inject, Input } from '@angular/core';
 import { Account, Transaction } from './account-data-access.component';
+import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
+import { AppModalComponent } from '../ui/ui-layout.component';
 
 @Component({
   selector: 'dapp-account-ui',
@@ -15,19 +17,147 @@ import { Account, Transaction } from './account-data-access.component';
 export class AccountUiComponent {}
 
 @Component({
+  template: ` <p>ModalAirdropDialogComponent: {{ data.message }}</p> `,
+  standalone: true,
+  styles: [
+    `
+      :host {
+        display: block;
+        background: #fff;
+        border-radius: 8px;
+        padding: 8px 16px;
+      }
+    `,
+  ],
+})
+export class ModalAirdropDialogComponent {
+  constructor(@Inject(DIALOG_DATA) public data: { message: string }) {}
+}
+
+@Component({
+  selector: 'dapp-modal-airdrop',
+  standalone: true,
+  imports: [CommonModule, AppModalComponent],
+  template: `
+    <dapp-app-modal
+      [submitDisabled]="false"
+      (doSubmit)="doSubmit()"
+      title="Airdrop"
+      submitLabel="Request Airdrop"
+    >
+      <input
+        type="number"
+        step="any"
+        min="1"
+        placeholder="Amount"
+        class="input input-bordered w-full"
+      />
+    </dapp-app-modal>
+  `,
+})
+export class ModalAirdropComponent {
+  // TODO: Logic to send airdrop
+  doSubmit() {
+    console.log('TEST');
+  }
+}
+
+@Component({
+  selector: 'dapp-modal-send',
+  standalone: true,
+  imports: [CommonModule, AppModalComponent],
+  template: `
+    <dapp-app-modal
+      [submitDisabled]="false"
+      (doSubmit)="doSubmit()"
+      title="Send"
+      submitLabel="Send"
+    >
+      <input
+        type="text"
+        placeholder="Destination"
+        class="input input-bordered w-full"
+      />
+      <input
+        type="number"
+        step="any"
+        min="1"
+        placeholder="Amount"
+        class="input input-bordered w-full"
+      />
+    </dapp-app-modal>
+  `,
+  styles: ``,
+})
+export class ModalSendComponent {
+  doSubmit() {
+    console.log('TEST');
+  }
+}
+
+@Component({
+  selector: 'dapp-modal-receive',
+  standalone: true,
+  imports: [CommonModule, AppModalComponent],
+  template: `
+    <dapp-app-modal
+      [submitDisabled]="false"
+      title="Receive"
+      submitLabel="Receive"
+    >
+      <p>Receive assets by sending them to your public key:</p>
+      <code> CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr</code>
+    </dapp-app-modal>
+  `,
+  styles: ``,
+})
+export class ModalReceiveComponent {
+  constructor(public dialog: Dialog) {}
+
+  showModal() {
+    this.dialog.open(AppModalComponent, {
+      minWidth: '300px',
+      data: {
+        button: 'Close',
+      },
+    });
+  }
+}
+@Component({
   selector: 'dapp-account-buttons',
   standalone: true,
-  imports: [CommonModule],
+  imports: [
+    CommonModule,
+    ModalAirdropComponent,
+    ModalSendComponent,
+    ModalReceiveComponent,
+  ],
   template: `
     <div class="space-x-2">
-      <button class="btn btn-xs lg:btn-md btn-outline">Airdrop</button>
-      <button class="btn btn-xs lg:btn-md btn-outline">Send</button>
-      <button class="btn btn-xs lg:btn-md btn-outline">Receive</button>
+      <button (click)="showAirdrop()" class="btn btn-xs lg:btn-md btn-outline">
+        Airdrop
+      </button>
+      <button (click)="showSend()" class="btn btn-xs lg:btn-md btn-outline">
+        Send</button
+      ><button (click)="showReceive()" class="btn btn-xs lg:btn-md btn-outline">
+        Receive
+      </button>
     </div>
   `,
   styles: ``,
 })
-export class AccountButtonsComponent {}
+export class AccountButtonsComponent {
+  private readonly dialog = inject(Dialog);
+  showAirdrop() {
+    this.dialog.open(ModalAirdropComponent);
+  }
+  showSend() {
+    this.dialog.open(ModalSendComponent);
+  }
+  showReceive() {
+    this.dialog.open(ModalReceiveComponent);
+  }
+}
 
 @Component({
   selector: 'dapp-account-tokens',
