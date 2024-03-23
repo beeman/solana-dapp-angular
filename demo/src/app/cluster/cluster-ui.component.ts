@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { Cluster } from './cluster-data-access.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'dapp-cluster-ui',
@@ -13,7 +14,7 @@ export class ClusterUiComponent {}
 @Component({
   selector: 'dapp-cluster-table',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
     <div class="overflow-x-auto">
       <table class="table border-4 border-separate border-base-300">
@@ -41,7 +42,11 @@ export class ClusterUiComponent {}
             </td>
             <td class="space-x-2 whitespace-nowrap text-center">
               <button class="btn btn-xs btn-default btn-outline">
-                <i class="fas fa-trash" size="16"></i>
+                <mat-icon
+                  aria-hidden="false"
+                  aria-label="delete cluster"
+                  fontIcon="delete"
+                />
               </button>
             </td>
           </tr>
