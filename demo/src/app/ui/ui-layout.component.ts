@@ -80,7 +80,7 @@ export class UiLayoutComponent {
               class="btn btn-xs lg:btn-md btn-primary"
               (click)="doSubmit.emit()"
             >
-              {{ submitLabel }}
+              {{ submitLabel || 'Save' }}
             </button>
             <button (click)="close()" class="btn">Close</button>
           </div>
