@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AppHeroComponent, AppModalComponent } from '../ui/ui-layout.component';
 import { ClusterUiTableComponent } from './cluster-ui.component';
-import { defaultClusters } from './cluster-data-access.component';
+import { ClusterService } from './cluster-data-access.component';
 import { Dialog } from '@angular/cdk/dialog';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'dapp-cluster-feature',
@@ -18,12 +19,12 @@ import { Dialog } from '@angular/cdk/dialog';
         Add Cluster
       </button>
     </dapp-app-hero>
-    <dapp-cluster-table [clusters]="defaultClusters" />
+    <dapp-cluster-table [clusters]="clusterService.clusters" />
   </div>`,
   styles: ``,
 })
 export class ClusterFeatureComponent {
-  defaultClusters = defaultClusters;
+  clusterService = inject(ClusterService);
 
   constructor(public dialog: Dialog) {}
 
@@ -40,38 +41,52 @@ export class ClusterFeatureComponent {
 @Component({
   selector: 'dapp-modal-add-cluster',
   standalone: true,
-  imports: [CommonModule, AppModalComponent],
+  imports: [CommonModule, AppModalComponent, ReactiveFormsModule],
   template: `
-    <dapp-app-modal
-      title="Add Cluster"
-      hide="hideModal"
-      show="show"
-      submit=" save"
-    >
-      <input
-        type="text"
-        placeholder="Name"
-        class="input input-bordered w-full"
-        value="name"
-      />
-      <input
-        type="text"
-        placeholder="Endpoint"
-        class="input input-bordered w-full"
-        value="endpoint"
-      />
-      <select class="select select-bordered w-full" value="{network}">
-        <option>Select a network</option>
-        <option>Devnet</option>
-        <option>Testnet</option>
-        <option>Mainnet</option>
-      </select>
-    </dapp-app-modal>
+    <form [formGroup]="form" (ngSubmit)="doSubmit()">
+      <dapp-app-modal
+        title="Add Cluster"
+        hide="hideModal"
+        show="show"
+        submit=" save"
+      >
+        <input
+          type="text"
+          placeholder="Name"
+          class="input input-bordered w-full"
+          value="name"
+          formControlName="name"
+        />
+        <input
+          type="text"
+          placeholder="Endpoint"
+          class="input input-bordered w-full"
+          value="endpoint"
+          formControlName="endpoint"
+        />
+        <select class="select select-bordered w-full" value="{network}">
+          <option>Select a network</option>
+          <option>Devnet</option>
+          <option>Testnet</option>
+          <option>Mainnet</option>
+        </select>
+      </dapp-app-modal>
+    </form>
   `,
 })
 export class ModalAddClusterComponent {
-  // TODO: Logic to send airdrop
+  form: FormGroup;
+  constructor() {
+    this.form = new FormGroup({
+      name: new FormControl(''),
+      endpoint: new FormControl(''),
+      network: new FormControl(''),
+    });
+  }
+  // 2: inject service
   doSubmit() {
-    console.log('TEST');
+    // 1: capture data from form:  name/endpoint/network?
+    console.log(this.form.value);
+    // 3: call clusterService.addCluster(....)
   }
 }
