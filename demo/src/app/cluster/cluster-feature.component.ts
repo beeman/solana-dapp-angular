@@ -83,10 +83,11 @@ export class ModalAddClusterComponent {
       network: new FormControl(''),
     });
   }
-  // 2: inject service
+
+  clusterService = inject(ClusterService);
+
   doSubmit() {
-    // 1: capture data from form:  name/endpoint/network?
+    this.clusterService.addCluster(this.form.value);
     console.log(this.form.value);
-    // 3: call clusterService.addCluster(....)
   }
 }
