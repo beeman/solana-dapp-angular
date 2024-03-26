@@ -3,6 +3,7 @@ import { Component, inject, Inject, Input } from '@angular/core';
 import { Account, Transaction } from './account-data-access.component';
 import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'dapp-account-ui',
@@ -162,7 +163,7 @@ export class AccountButtonsComponent {
 @Component({
   selector: 'dapp-account-tokens',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
     <div class="space-y-2">
       <div class="justify-between">
@@ -172,7 +173,11 @@ export class AccountButtonsComponent {
             <!--            <span class="loading loading-spinner"></span>-->
 
             <button class="btn btn-sm btn-outline">
-              <!--              <iconRefresh></iconRefresh>-->
+              <mat-icon
+                aria-hidden="false"
+                aria-label="refresh items"
+                fontIcon="refresh"
+              />
             </button>
           </div>
         </div>
@@ -233,14 +238,18 @@ export class AccountTokensComponent {
 @Component({
   selector: 'dapp-account-transactions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: ` <div class="space-y-2">
     <div class="flex justify-between">
       <h2 class="text-2xl font-bold">Transaction History</h2>
       <div class="space-x-2">
         <!--        <span class="loading loading-spinner"></span>-->
         <button class="btn btn-sm btn-outline">
-          <!--            <IconRefresh />-->
+          <mat-icon
+            aria-hidden="false"
+            aria-label="refresh items"
+            fontIcon="refresh"
+          />
         </button>
       </div>
     </div>
