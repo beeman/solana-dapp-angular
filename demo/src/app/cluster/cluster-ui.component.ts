@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input } from '@angular/core';
-import { Cluster } from './cluster-data-access.component';
+import { Component, inject, Input } from '@angular/core';
+import { Cluster, ClusterService } from './cluster-data-access.component';
 import { MatIconModule } from '@angular/material/icon';
 
 @Component({
@@ -41,7 +41,10 @@ export class ClusterUiComponent {}
               </div>
             </td>
             <td class="space-x-2 whitespace-nowrap text-center">
-              <button class="btn btn-xs btn-default btn-outline">
+              <button
+                (click)="clusterService.deleteCluster(cluster)"
+                class="btn btn-xs btn-default btn-outline"
+              >
                 <mat-icon
                   aria-hidden="false"
                   aria-label="delete cluster"
@@ -57,5 +60,14 @@ export class ClusterUiComponent {}
   `,
 })
 export class ClusterUiTableComponent {
+  clusterService = inject(ClusterService);
+
+  deleteCluster() {
+    const name = `test-${Date.now()}`;
+    this.clusterService.deleteCluster({
+      endpoint: 'http://localhost:8899',
+      name,
+    });
+  }
   @Input() clusters: Cluster[] = [];
 }
