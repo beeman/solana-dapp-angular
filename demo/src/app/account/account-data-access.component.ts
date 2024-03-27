@@ -1,5 +1,5 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
+import { LocalStorageService } from 'ngx-localstorage';
 
 export interface Account {
   publicKey: string;
@@ -41,11 +41,7 @@ export const defaultTransactions: Transaction[] = [
   },
 ];
 
-@Component({
-  selector: 'dapp-account-data-access',
-  standalone: true,
-  imports: [CommonModule],
-  template: `<p>account-data-access works!</p>`,
-  styles: ``,
-})
-export class AccountDataAccessComponent {}
+@Injectable({ providedIn: 'root' })
+export class AccountService {
+  readonly storage = inject(LocalStorageService);
+}

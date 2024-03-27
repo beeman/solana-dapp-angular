@@ -1,9 +1,14 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Inject, Input } from '@angular/core';
-import { Account, Transaction } from './account-data-access.component';
+import {
+  Account,
+  AccountService,
+  Transaction,
+} from './account-data-access.component';
 import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
 import { MatIconModule } from '@angular/material/icon';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'dapp-account-ui',
@@ -38,61 +43,84 @@ export class ModalAirdropDialogComponent {
 @Component({
   selector: 'dapp-modal-airdrop',
   standalone: true,
-  imports: [CommonModule, AppModalComponent],
+  imports: [CommonModule, AppModalComponent, ReactiveFormsModule],
   template: `
-    <dapp-app-modal
-      [submitDisabled]="false"
-      (doSubmit)="doSubmit()"
-      title="Airdrop"
-      submitLabel="Request Airdrop"
-    >
-      <input
-        type="number"
-        step="any"
-        min="1"
-        placeholder="Amount"
-        class="input input-bordered w-full"
-      />
-    </dapp-app-modal>
+    <form [formGroup]="form" (ngSubmit)="doSubmit()">
+      <dapp-app-modal
+        [submitDisabled]="false"
+        (doSubmit)="doSubmit()"
+        title="Airdrop"
+        submitLabel="Request Airdrop"
+      >
+        <input
+          type="number"
+          step="any"
+          min="1"
+          placeholder="Amount"
+          class="input input-bordered w-full"
+          formControlName="number"
+        />
+      </dapp-app-modal>
+    </form>
   `,
 })
 export class ModalAirdropComponent {
-  // TODO: Logic to send airdrop
+  form: FormGroup;
+  constructor() {
+    this.form = new FormGroup({
+      number: new FormControl(''),
+    });
+  }
+
+  accountService = inject(AccountService);
   doSubmit() {
-    console.log('TEST');
+    console.log(this.form.value);
   }
 }
 
 @Component({
   selector: 'dapp-modal-send',
   standalone: true,
-  imports: [CommonModule, AppModalComponent],
+  imports: [CommonModule, AppModalComponent, ReactiveFormsModule],
   template: `
-    <dapp-app-modal
-      [submitDisabled]="false"
-      (doSubmit)="doSubmit()"
-      title="Send"
-      submitLabel="Send"
-    >
-      <input
-        type="text"
-        placeholder="Destination"
-        class="input input-bordered w-full"
-      />
-      <input
-        type="number"
-        step="any"
-        min="1"
-        placeholder="Amount"
-        class="input input-bordered w-full"
-      />
-    </dapp-app-modal>
+    <form [formGroup]="form" (ngSubmit)="doSubmit()">
+      <dapp-app-modal
+        [submitDisabled]="false"
+        (doSubmit)="doSubmit()"
+        title="Send"
+        submitLabel="Send"
+      >
+        <input
+          type="text"
+          placeholder="Destination"
+          class="input input-bordered w-full"
+          formControlName="destination"
+        />
+        <input
+          type="number"
+          step="any"
+          min="1"
+          placeholder="Amount"
+          class="input input-bordered w-full"
+          formControlName="amount"
+        />
+      </dapp-app-modal>
+    </form>
   `,
   styles: ``,
 })
 export class ModalSendComponent {
+  form: FormGroup;
+  constructor() {
+    this.form = new FormGroup({
+      destination: new FormControl(''),
+      amount: new FormControl(''),
+    });
+  }
+
+  accountService = inject(AccountService);
   doSubmit() {
-    console.log('TEST');
+    console.log(this.form.value);
   }
 }
 
