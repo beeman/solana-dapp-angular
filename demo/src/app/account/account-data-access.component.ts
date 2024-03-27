@@ -1,6 +1,3 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-
 export interface Account {
   publicKey: string;
   mint: string;
@@ -40,12 +37,3 @@ export const defaultTransactions: Transaction[] = [
     status: 'Success',
   },
 ];
-
-@Component({
-  selector: 'dapp-account-data-access',
-  standalone: true,
-  imports: [CommonModule],
-  template: `<p>account-data-access works!</p>`,
-  styles: ``,
-})
-export class AccountDataAccessComponent {}
