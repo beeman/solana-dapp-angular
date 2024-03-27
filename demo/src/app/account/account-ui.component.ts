@@ -1,10 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Inject, Input } from '@angular/core';
-import {
-  Account,
-  AccountService,
-  Transaction,
-} from './account-data-access.component';
+import { Account, Transaction } from './account-data-access.component';
 import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
 import { MatIconModule } from '@angular/material/icon';
@@ -72,7 +68,6 @@ export class ModalAirdropComponent {
     });
   }
 
-  accountService = inject(AccountService);
   doSubmit() {
     console.log(this.form.value);
   }
@@ -118,7 +113,6 @@ export class ModalSendComponent {
     });
   }
 
-  accountService = inject(AccountService);
   doSubmit() {
     console.log(this.form.value);
   }

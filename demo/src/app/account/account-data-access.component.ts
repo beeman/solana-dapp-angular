@@ -1,6 +1,3 @@
-import { inject, Injectable } from '@angular/core';
-import { LocalStorageService } from 'ngx-localstorage';
-
 export interface Account {
   publicKey: string;
   mint: string;
@@ -40,8 +37,3 @@ export const defaultTransactions: Transaction[] = [
     status: 'Success',
   },
 ];
-
-@Injectable({ providedIn: 'root' })
-export class AccountService {
-  readonly storage = inject(LocalStorageService);
-}
