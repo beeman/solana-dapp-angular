@@ -88,6 +88,5 @@ export class ModalAddClusterComponent {
 
   doSubmit() {
     this.clusterService.addCluster(this.form.value);
-    console.log(this.form.value);
   }
 }

@@ -62,12 +62,5 @@ export class ClusterUiComponent {}
 export class ClusterUiTableComponent {
   clusterService = inject(ClusterService);
 
-  deleteCluster() {
-    const name = `test-${Date.now()}`;
-    this.clusterService.deleteCluster({
-      endpoint: 'http://localhost:8899',
-      name,
-    });
-  }
   @Input() clusters: Cluster[] = [];
 }
