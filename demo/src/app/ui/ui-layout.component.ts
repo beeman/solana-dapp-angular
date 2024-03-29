@@ -1,8 +1,11 @@
+import { Dialog } from '@angular/cdk/dialog';
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
-import { Dialog } from '@angular/cdk/dialog';
-import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-material';
+import {
+  HdWalletAdapterMaterialModule,
+  HdWalletMultiButtonComponent,
+} from '@heavy-duty/wallet-adapter-material';
 
 @Component({
   selector: 'dapp-ui-layout',
@@ -12,6 +15,7 @@ import { HdWalletMultiButtonComponent } from '@heavy-duty/wallet-adapter-materia
     RouterLink,
     RouterOutlet,
     HdWalletMultiButtonComponent,
+    HdWalletAdapterMaterialModule,
   ],
   template: `
     <div class="h-full flex flex-col">

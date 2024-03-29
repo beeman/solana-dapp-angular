@@ -16,7 +16,10 @@
         "polyfills": ["zone.js"],
         "tsConfig": "demo/tsconfig.app.json",
         "assets": ["demo/src/favicon.ico", "demo/src/assets"],
-        "styles": ["demo/src/styles.scss"],
+        "styles": [
+          "@angular/material/prebuilt-themes/purple-green.css",
+          "demo/src/styles.scss"
+        ],
         "scripts": []
       },
       "configurations": {
