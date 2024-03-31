@@ -22,7 +22,6 @@ import {
     CommonModule,
     AppHeroComponent,
     RouterLink,
-    JsonPipe,
     AccountButtonsComponent,
     AccountTokensComponent,
     AccountTransactionsComponent,

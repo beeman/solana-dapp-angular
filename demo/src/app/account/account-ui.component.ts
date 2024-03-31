@@ -1,4 +1,4 @@
-import { CommonModule, JsonPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, inject, Inject, Input } from '@angular/core';
 import {
   Account,
@@ -9,8 +9,6 @@ import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
 import { MatIconModule } from '@angular/material/icon';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { WalletStore } from '@heavy-duty/wallet-adapter';
 import { computedAsync } from 'ngxtension/computed-async';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
@@ -33,7 +31,7 @@ export class BalanceSolComponent {
 @Component({
   selector: 'dapp-account-balance',
   standalone: true,
-  imports: [CommonModule, JsonPipe, BalanceSolComponent],
+  imports: [CommonModule, BalanceSolComponent],
   template: `
     <div>
       <h1 class="text-5xl font-bold cursor-pointer">

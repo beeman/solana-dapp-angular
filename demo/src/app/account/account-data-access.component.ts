@@ -47,7 +47,6 @@ export const defaultTransactions: Transaction[] = [
 })
 export class AccountService {
   private readonly connection = new Connection(clusterApiUrl('devnet'));
-  private readonly _key = 'BJyq3roxaYEsPTs2';
 
   getBalance(publicKey: string | undefined | null) {
     if (!publicKey) {

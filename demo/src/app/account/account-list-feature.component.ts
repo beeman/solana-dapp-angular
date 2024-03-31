@@ -10,11 +10,7 @@ import { Router, RouterLink } from '@angular/router';
   standalone: true,
   imports: [CommonModule, HdWalletMultiButtonComponent, RouterLink],
   template: `
-    @if(publicKey()){
-    <div>
-      <a [routerLink]="['account/:c']">{{ publicKey() }}</a>
-    </div>
-    }@else{
+    @if(!publicKey()){
     <div class=" py-64">
       <div class="text-center">
         <hd-wallet-multi-button></hd-wallet-multi-button>
