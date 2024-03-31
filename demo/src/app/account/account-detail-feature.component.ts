@@ -1,8 +1,9 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, Input } from '@angular/core';
 import { AppHeroComponent } from '../ui/ui-layout.component';
 import { RouterLink } from '@angular/router';
 import {
+  AccountBalanceComponent,
   AccountButtonsComponent,
   AccountTokensComponent,
   AccountTransactionsComponent,
@@ -21,19 +22,22 @@ import {
     CommonModule,
     AppHeroComponent,
     RouterLink,
+    JsonPipe,
     AccountButtonsComponent,
     AccountTokensComponent,
     AccountTransactionsComponent,
+    AccountBalanceComponent,
   ],
   template: `
     <div>
       <dapp-app-hero>
-        <h1 class="text-5xl font-bold cursor-pointer">100 SOL</h1>
+        <dapp-account-balance [address]="address"></dapp-account-balance>
         <div class="my-4">
           <a
             routerLink="https://explorer.solana.com/address/CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr?cluster=devnet"
-            >CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr</a
           >
+            {{ address }}
+          </a>
         </div>
         <div class="my-4"><dapp-account-buttons /></div>
       </dapp-app-hero>
@@ -45,6 +49,7 @@ import {
   `,
 })
 export class AccountDetailFeatureComponent {
+  address = 'CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr';
   defaultAccounts: Account[] = defaultAccounts;
   defaultTransactions: Transaction[] = defaultTransactions;
 }

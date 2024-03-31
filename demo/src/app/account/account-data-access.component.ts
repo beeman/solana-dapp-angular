@@ -1,3 +1,8 @@
+import { from, of } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { toSignal } from '@angular/core/rxjs-interop';
+
 export interface Account {
   publicKey: string;
   mint: string;
@@ -37,3 +42,17 @@ export const defaultTransactions: Transaction[] = [
     status: 'Success',
   },
 ];
+@Injectable({
+  providedIn: 'root',
+})
+export class AccountService {
+  private readonly connection = new Connection(clusterApiUrl('devnet'));
+  private readonly _key = 'BJyq3roxaYEsPTs2';
+
+  getBalance(publicKey: string | undefined | null) {
+    if (!publicKey) {
+      return of(null);
+    }
+    return from(this.connection.getBalance(new PublicKey(publicKey)));
+  }
+}

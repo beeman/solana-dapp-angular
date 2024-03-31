@@ -1,22 +1,58 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, JsonPipe } from '@angular/common';
 import { Component, inject, Inject, Input } from '@angular/core';
-import { Account, Transaction } from './account-data-access.component';
+import {
+  Account,
+  AccountService,
+  Transaction,
+} from './account-data-access.component';
 import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
 import { MatIconModule } from '@angular/material/icon';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { WalletStore } from '@heavy-duty/wallet-adapter';
+import { computedAsync } from 'ngxtension/computed-async';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 @Component({
-  selector: 'dapp-account-ui',
+  selector: 'dapp-balance-sol',
   standalone: true,
   imports: [CommonModule],
+  template: `<span>{{ converted }}</span>`,
+})
+export class BalanceSolComponent {
+  @Input() balance!: number | null | undefined;
+
+  get converted() {
+    return (
+      Math.round(((this.balance ?? 0) / LAMPORTS_PER_SOL) * 100000) / 100000
+    );
+  }
+}
+
+@Component({
+  selector: 'dapp-account-balance',
+  standalone: true,
+  imports: [CommonModule, JsonPipe, BalanceSolComponent],
   template: `
     <div>
-      <h1 class="text-5xl font-bold cursor-pointer">Balance</h1>
+      <h1 class="text-5xl font-bold cursor-pointer">
+        @if (balance()) {
+        <dapp-balance-sol [balance]="balance()" />
+        SOL }
+      </h1>
     </div>
   `,
 })
-export class AccountUiComponent {}
+export class AccountBalanceComponent {
+  @Input() address!: string;
+  private readonly _accountService = inject(AccountService);
+
+  readonly balance = computedAsync(
+    () => this._accountService.getBalance(this.address),
+    { requireSync: false }
+  );
+}
 
 @Component({
   template: ` <p>ModalAirdropDialogComponent: {{ data.message }}</p> `,
