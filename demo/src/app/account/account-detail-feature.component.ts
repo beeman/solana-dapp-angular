@@ -1,5 +1,5 @@
-import { CommonModule, JsonPipe } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { AppHeroComponent } from '../ui/ui-layout.component';
 import { RouterLink } from '@angular/router';
 import {
@@ -9,10 +9,8 @@ import {
   AccountTransactionsComponent,
 } from './account-ui.component';
 import {
-  Account,
-  Transaction,
-  defaultAccounts,
   defaultTransactions,
+  Transaction,
 } from './account-data-access.component';
 
 @Component({
@@ -41,7 +39,7 @@ import {
         <div class="my-4"><dapp-account-buttons /></div>
       </dapp-app-hero>
       <div class="space-y-8">
-        <dapp-account-tokens [accounts]="defaultAccounts" />
+        <dapp-account-tokens [address]="address" />
         <dapp-account-transactions [transactions]="defaultTransactions" />
       </div>
     </div>
@@ -49,6 +47,5 @@ import {
 })
 export class AccountDetailFeatureComponent {
   address = 'CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr';
-  defaultAccounts: Account[] = defaultAccounts;
   defaultTransactions: Transaction[] = defaultTransactions;
 }

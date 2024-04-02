@@ -1,7 +1,12 @@
 import { from, of } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
+import {
+  injectQuery,
+  injectQueryClient,
+} from '@tanstack/angular-query-experimental';
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 export interface Account {
   publicKey: string;
@@ -47,11 +52,33 @@ export const defaultTransactions: Transaction[] = [
 })
 export class AccountService {
   private readonly connection = new Connection(clusterApiUrl('devnet'));
+  private http = inject(HttpClient);
+  private queryClient = injectQueryClient();
 
   getBalance(publicKey: string | undefined | null) {
     if (!publicKey) {
       return of(null);
     }
     return from(this.connection.getBalance(new PublicKey(publicKey)));
+  }
+
+  getTokenAccounts(address: PublicKey) {
+    return injectQuery(() => ({
+      queryKey: [
+        'get-token-accounts',
+        { endpoint: this.connection.rpcEndpoint, address },
+      ],
+      queryFn: async () => {
+        const [tokenAccounts, token2022Accounts] = await Promise.all([
+          this.connection.getParsedTokenAccountsByOwner(address, {
+            programId: TOKEN_PROGRAM_ID,
+          }),
+          this.connection.getParsedTokenAccountsByOwner(address, {
+            programId: TOKEN_2022_PROGRAM_ID,
+          }),
+        ]);
+        return [...tokenAccounts.value, ...token2022Accounts.value];
+      },
+    }));
   }
 }

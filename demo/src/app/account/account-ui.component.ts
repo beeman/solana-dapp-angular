@@ -1,16 +1,13 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, Inject, Input } from '@angular/core';
-import {
-  Account,
-  AccountService,
-  Transaction,
-} from './account-data-access.component';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, inject, Inject, input, Input } from '@angular/core';
+import { AccountService, Transaction } from './account-data-access.component';
 import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
 import { MatIconModule } from '@angular/material/icon';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { computedAsync } from 'ngxtension/computed-async';
-import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 @Component({
   selector: 'dapp-balance-sol',
@@ -43,11 +40,12 @@ export class BalanceSolComponent {
   `,
 })
 export class AccountBalanceComponent {
-  @Input() address!: string;
+  // @Input() address!: string;
+  readonly address = input.required<string>();
   private readonly _accountService = inject(AccountService);
 
   readonly balance = computedAsync(
-    () => this._accountService.getBalance(this.address),
+    () => this._accountService.getBalance(this.address()),
     { requireSync: false }
   );
 }
@@ -219,7 +217,7 @@ export class AccountButtonsComponent {
 @Component({
   selector: 'dapp-account-tokens',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, JsonPipe],
   template: `
     <div class="space-y-2">
       <div class="justify-between">
@@ -228,7 +226,7 @@ export class AccountButtonsComponent {
           <div class="space-x-2">
             <!--            <span class="loading loading-spinner"></span>-->
 
-            <button class="btn btn-sm btn-outline">
+            <button class="btn btn-sm btn-outline" (click)="query.refetch()">
               <mat-icon
                 aria-hidden="false"
                 aria-label="refresh items"
@@ -253,24 +251,26 @@ export class AccountButtonsComponent {
             </tr>
           </thead>
           <tbody>
-            @for(account of accounts; track account){
+            @for(item of items(); track item){
             <tr>
               <td>
                 <div class="flex space-x-2">
                   <span class="font-mono">
-                    <a>{{ account.publicKey }}</a>
+                    <a>{{ item.pubkey }}</a>
                   </span>
                 </div>
               </td>
               <td>
                 <div class="flex space-x-2">
                   <span class="font-mono">
-                    <a>{{ account.mint }}</a>
+                    <a>{{ item.account.data.parsed?.info.mint }}</a>
                   </span>
                 </div>
               </td>
               <td class="text-right">
-                <span class="font-mono">{{ account.amount }}</span>
+                <span class="font-mono">{{
+                  item.account.data.parsed?.info?.tokenAmount?.uiAmount
+                }}</span>
               </td>
             </tr>
 
@@ -285,10 +285,26 @@ export class AccountButtonsComponent {
       </div>
     </div>
   `,
-  styles: ``,
 })
 export class AccountTokensComponent {
-  @Input() accounts: Account[] = [];
+  readonly address = input<string>();
+  private readonly accountService = inject(AccountService);
+
+  readonly query = this.accountService.getTokenAccounts(
+    this.address()
+      ? new PublicKey(this.address)
+      : new PublicKey('CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr')
+  );
+
+  showAll = false;
+  setShowAll() {
+    this.showAll = !this.showAll;
+  }
+
+  // readonly items = computed(() => this.query.data);
+  readonly items = computedAsync(() => this.query.data(), {
+    requireSync: false,
+  });
 }
 
 @Component({
