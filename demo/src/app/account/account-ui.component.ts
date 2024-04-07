@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { computedAsync } from 'ngxtension/computed-async';
 import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 @Component({
   selector: 'dapp-balance-sol',
@@ -276,7 +275,9 @@ export class AccountButtonsComponent {
 
             <tr>
               <td class="text-center">
-                <!--                <button class="btn btn-xs btn-outline"></button>-->
+                <button (click)="setShowAll()" class="btn btn-xs btn-outline">
+                  Show All
+                </button>
               </td>
             </tr>
             }
@@ -316,7 +317,7 @@ export class AccountTokensComponent {
       <h2 class="text-2xl font-bold">Transaction History</h2>
       <div class="space-x-2">
         <!--        <span class="loading loading-spinner"></span>-->
-        <button class="btn btn-sm btn-outline">
+        <button class="btn btn-sm btn-outline" (click)="query.refetch()">
           <mat-icon
             aria-hidden="false"
             aria-label="refresh items"
@@ -340,29 +341,34 @@ export class AccountTokensComponent {
           </tr>
         </thead>
         <tbody>
-          @for(transaction of transactions; track transaction){
+          @for(item of items(); track item){
           <tr>
             <th class="font-mono">
-              <a>{{ transaction.signature }}</a>
+              <a>{{ item.signature }}</a>
             </th>
             <td class="font-mono text-right">
-              <a>{{ transaction.slot }}</a>
+              <a>{{ item.slot }}</a>
             </td>
-            <td>{{ transaction.blockTime }}</td>
+            <td>{{ item.blockTime }}</td>
             <td class="text-right">
-              <!--              <div class="badge badge-error">Failed</div>-->
+              @if(item.err){
+              <div class="badge badge-error">Failed</div>
+              }@else{
 
-              <div class="badge badge-success">{{ transaction.status }}</div>
+              <div class="badge badge-success">Success</div>
+              }
             </td>
           </tr>
 
           }
+          <tr>
+            <td colSpan="{4}" class="text-center">
+              <button class="btn btn-xs btn-outline" (click)="setShowAll()">
+                Show All
+              </button>
+            </td>
+          </tr>
         </tbody>
-        <tr>
-          <td colSpan="{4}" class="text-center">
-            <button class="btn btn-xs btn-outline">Show All</button>
-          </td>
-        </tr>
       </table>
     </div>
   </div>`,
@@ -370,4 +376,22 @@ export class AccountTokensComponent {
 })
 export class AccountTransactionsComponent {
   @Input() transactions: Transaction[] = [];
+  readonly address = input<string>();
+  private readonly accountService = inject(AccountService);
+
+  readonly query = this.accountService.getSignatures(
+    this.address()
+      ? new PublicKey(this.address)
+      : new PublicKey('CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr')
+  );
+
+  showAll = false;
+  setShowAll() {
+    this.showAll = !this.showAll;
+  }
+
+  // readonly items = computed(() => this.query.data);
+  readonly items = computedAsync(() => this.query.data(), {
+    requireSync: false,
+  });
 }

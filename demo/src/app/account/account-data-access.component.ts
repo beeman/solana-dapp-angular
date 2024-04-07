@@ -81,4 +81,14 @@ export class AccountService {
       },
     }));
   }
+
+  getSignatures(address: PublicKey) {
+    return injectQuery(() => ({
+      queryKey: [
+        'get-signatures',
+        { endpoint: this.connection.rpcEndpoint, address },
+      ],
+      queryFn: () => this.connection.getConfirmedSignaturesForAddress2(address),
+    }));
+  }
 }
