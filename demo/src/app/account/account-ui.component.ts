@@ -1,22 +1,53 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, Inject, Input } from '@angular/core';
-import { Account, Transaction } from './account-data-access.component';
+import { CommonModule, JsonPipe } from '@angular/common';
+import { Component, inject, Inject, input, Input } from '@angular/core';
+import { AccountService, Transaction } from './account-data-access.component';
 import { Dialog, DIALOG_DATA } from '@angular/cdk/dialog';
 import { AppModalComponent } from '../ui/ui-layout.component';
 import { MatIconModule } from '@angular/material/icon';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { computedAsync } from 'ngxtension/computed-async';
+import { LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
 
 @Component({
-  selector: 'dapp-account-ui',
+  selector: 'dapp-balance-sol',
   standalone: true,
   imports: [CommonModule],
+  template: `<span>{{ converted }}</span>`,
+})
+export class BalanceSolComponent {
+  @Input() balance!: number | null | undefined;
+
+  get converted() {
+    return (
+      Math.round(((this.balance ?? 0) / LAMPORTS_PER_SOL) * 100000) / 100000
+    );
+  }
+}
+
+@Component({
+  selector: 'dapp-account-balance',
+  standalone: true,
+  imports: [CommonModule, BalanceSolComponent],
   template: `
     <div>
-      <h1 class="text-5xl font-bold cursor-pointer">Balance</h1>
+      <h1 class="text-5xl font-bold cursor-pointer">
+        @if (balance()) {
+        <dapp-balance-sol [balance]="balance()" />
+        SOL }
+      </h1>
     </div>
   `,
 })
-export class AccountUiComponent {}
+export class AccountBalanceComponent {
+  // @Input() address!: string;
+  readonly address = input.required<string>();
+  private readonly _accountService = inject(AccountService);
+
+  readonly balance = computedAsync(
+    () => this._accountService.getBalance(this.address()),
+    { requireSync: false }
+  );
+}
 
 @Component({
   template: ` <p>ModalAirdropDialogComponent: {{ data.message }}</p> `,
@@ -185,7 +216,7 @@ export class AccountButtonsComponent {
 @Component({
   selector: 'dapp-account-tokens',
   standalone: true,
-  imports: [CommonModule, MatIconModule],
+  imports: [CommonModule, MatIconModule, JsonPipe],
   template: `
     <div class="space-y-2">
       <div class="justify-between">
@@ -194,7 +225,7 @@ export class AccountButtonsComponent {
           <div class="space-x-2">
             <!--            <span class="loading loading-spinner"></span>-->
 
-            <button class="btn btn-sm btn-outline">
+            <button class="btn btn-sm btn-outline" (click)="query.refetch()">
               <mat-icon
                 aria-hidden="false"
                 aria-label="refresh items"
@@ -219,30 +250,34 @@ export class AccountButtonsComponent {
             </tr>
           </thead>
           <tbody>
-            @for(account of accounts; track account){
+            @for(item of items(); track item){
             <tr>
               <td>
                 <div class="flex space-x-2">
                   <span class="font-mono">
-                    <a>{{ account.publicKey }}</a>
+                    <a>{{ item.pubkey }}</a>
                   </span>
                 </div>
               </td>
               <td>
                 <div class="flex space-x-2">
                   <span class="font-mono">
-                    <a>{{ account.mint }}</a>
+                    <a>{{ item.account.data.parsed?.info.mint }}</a>
                   </span>
                 </div>
               </td>
               <td class="text-right">
-                <span class="font-mono">{{ account.amount }}</span>
+                <span class="font-mono">{{
+                  item.account.data.parsed?.info?.tokenAmount?.uiAmount
+                }}</span>
               </td>
             </tr>
 
             <tr>
               <td class="text-center">
-                <!--                <button class="btn btn-xs btn-outline"></button>-->
+                <button (click)="setShowAll()" class="btn btn-xs btn-outline">
+                  Show All
+                </button>
               </td>
             </tr>
             }
@@ -251,10 +286,26 @@ export class AccountButtonsComponent {
       </div>
     </div>
   `,
-  styles: ``,
 })
 export class AccountTokensComponent {
-  @Input() accounts: Account[] = [];
+  readonly address = input<string>();
+  private readonly accountService = inject(AccountService);
+
+  readonly query = this.accountService.getTokenAccounts(
+    this.address()
+      ? new PublicKey(this.address)
+      : new PublicKey('CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr')
+  );
+
+  showAll = false;
+  setShowAll() {
+    this.showAll = !this.showAll;
+  }
+
+  // readonly items = computed(() => this.query.data);
+  readonly items = computedAsync(() => this.query.data(), {
+    requireSync: false,
+  });
 }
 
 @Component({
@@ -266,7 +317,7 @@ export class AccountTokensComponent {
       <h2 class="text-2xl font-bold">Transaction History</h2>
       <div class="space-x-2">
         <!--        <span class="loading loading-spinner"></span>-->
-        <button class="btn btn-sm btn-outline">
+        <button class="btn btn-sm btn-outline" (click)="query.refetch()">
           <mat-icon
             aria-hidden="false"
             aria-label="refresh items"
@@ -290,29 +341,34 @@ export class AccountTokensComponent {
           </tr>
         </thead>
         <tbody>
-          @for(transaction of transactions; track transaction){
+          @for(item of items(); track item){
           <tr>
             <th class="font-mono">
-              <a>{{ transaction.signature }}</a>
+              <a>{{ item.signature }}</a>
             </th>
             <td class="font-mono text-right">
-              <a>{{ transaction.slot }}</a>
+              <a>{{ item.slot }}</a>
             </td>
-            <td>{{ transaction.blockTime }}</td>
+            <td>{{ item.blockTime }}</td>
             <td class="text-right">
-              <!--              <div class="badge badge-error">Failed</div>-->
+              @if(item.err){
+              <div class="badge badge-error">Failed</div>
+              }@else{
 
-              <div class="badge badge-success">{{ transaction.status }}</div>
+              <div class="badge badge-success">Success</div>
+              }
             </td>
           </tr>
 
           }
+          <tr>
+            <td colSpan="{4}" class="text-center">
+              <button class="btn btn-xs btn-outline" (click)="setShowAll()">
+                Show All
+              </button>
+            </td>
+          </tr>
         </tbody>
-        <tr>
-          <td colSpan="{4}" class="text-center">
-            <button class="btn btn-xs btn-outline">Show All</button>
-          </td>
-        </tr>
       </table>
     </div>
   </div>`,
@@ -320,4 +376,22 @@ export class AccountTokensComponent {
 })
 export class AccountTransactionsComponent {
   @Input() transactions: Transaction[] = [];
+  readonly address = input<string>();
+  private readonly accountService = inject(AccountService);
+
+  readonly query = this.accountService.getSignatures(
+    this.address()
+      ? new PublicKey(this.address)
+      : new PublicKey('CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr')
+  );
+
+  showAll = false;
+  setShowAll() {
+    this.showAll = !this.showAll;
+  }
+
+  // readonly items = computed(() => this.query.data);
+  readonly items = computedAsync(() => this.query.data(), {
+    requireSync: false,
+  });
 }

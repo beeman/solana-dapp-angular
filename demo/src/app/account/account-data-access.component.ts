@@ -1,3 +1,13 @@
+import { from, of } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
+import { HttpClient } from '@angular/common/http';
+import {
+  injectQuery,
+  injectQueryClient,
+} from '@tanstack/angular-query-experimental';
+import { TOKEN_2022_PROGRAM_ID, TOKEN_PROGRAM_ID } from '@solana/spl-token';
+
 export interface Account {
   publicKey: string;
   mint: string;
@@ -37,3 +47,48 @@ export const defaultTransactions: Transaction[] = [
     status: 'Success',
   },
 ];
+@Injectable({
+  providedIn: 'root',
+})
+export class AccountService {
+  private readonly connection = new Connection(clusterApiUrl('devnet'));
+  private http = inject(HttpClient);
+  private queryClient = injectQueryClient();
+
+  getBalance(publicKey: string | undefined | null) {
+    if (!publicKey) {
+      return of(null);
+    }
+    return from(this.connection.getBalance(new PublicKey(publicKey)));
+  }
+
+  getTokenAccounts(address: PublicKey) {
+    return injectQuery(() => ({
+      queryKey: [
+        'get-token-accounts',
+        { endpoint: this.connection.rpcEndpoint, address },
+      ],
+      queryFn: async () => {
+        const [tokenAccounts, token2022Accounts] = await Promise.all([
+          this.connection.getParsedTokenAccountsByOwner(address, {
+            programId: TOKEN_PROGRAM_ID,
+          }),
+          this.connection.getParsedTokenAccountsByOwner(address, {
+            programId: TOKEN_2022_PROGRAM_ID,
+          }),
+        ]);
+        return [...tokenAccounts.value, ...token2022Accounts.value];
+      },
+    }));
+  }
+
+  getSignatures(address: PublicKey) {
+    return injectQuery(() => ({
+      queryKey: [
+        'get-signatures',
+        { endpoint: this.connection.rpcEndpoint, address },
+      ],
+      queryFn: () => this.connection.getConfirmedSignaturesForAddress2(address),
+    }));
+  }
+}

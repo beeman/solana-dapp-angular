@@ -3,15 +3,14 @@ import { Component } from '@angular/core';
 import { AppHeroComponent } from '../ui/ui-layout.component';
 import { RouterLink } from '@angular/router';
 import {
+  AccountBalanceComponent,
   AccountButtonsComponent,
   AccountTokensComponent,
   AccountTransactionsComponent,
 } from './account-ui.component';
 import {
-  Account,
-  Transaction,
-  defaultAccounts,
   defaultTransactions,
+  Transaction,
 } from './account-data-access.component';
 
 @Component({
@@ -24,27 +23,29 @@ import {
     AccountButtonsComponent,
     AccountTokensComponent,
     AccountTransactionsComponent,
+    AccountBalanceComponent,
   ],
   template: `
     <div>
       <dapp-app-hero>
-        <h1 class="text-5xl font-bold cursor-pointer">100 SOL</h1>
+        <dapp-account-balance [address]="address"></dapp-account-balance>
         <div class="my-4">
           <a
             routerLink="https://explorer.solana.com/address/CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr?cluster=devnet"
-            >CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr</a
           >
+            {{ address }}
+          </a>
         </div>
         <div class="my-4"><dapp-account-buttons /></div>
       </dapp-app-hero>
       <div class="space-y-8">
-        <dapp-account-tokens [accounts]="defaultAccounts" />
+        <dapp-account-tokens [address]="address" />
         <dapp-account-transactions [transactions]="defaultTransactions" />
       </div>
     </div>
   `,
 })
 export class AccountDetailFeatureComponent {
-  defaultAccounts: Account[] = defaultAccounts;
+  address = 'CvQf1w1T828bRqfD6fA1rWdCR4ybCsEr6vwHdYPTMfSr';
   defaultTransactions: Transaction[] = defaultTransactions;
 }
